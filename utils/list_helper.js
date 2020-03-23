@@ -4,8 +4,8 @@ const dummy = (blogs) => {
     return 1
 }
 
-const totalLikes = (blog) => {
-    return blog[0].likes
+const totalLikes = (blogs) => {
+    return blogs.reduce((accu, curr) => accu + curr.likes, 0) || 0
 }
 
 const favoriteBlog = (blogs) => {
@@ -29,10 +29,6 @@ const mostBlogs = (blogs) => {
     //     .value()
     const authors = blogs.map(blog => blog.author)
     const occurrences = authors.reduce((acc, current) => {
-
-        // console.log("acc", acc);
-        // console.log('current', current)
-        // console.log(acc[current])
         !acc[current] ? acc[current] = 1 : acc[current]++
         return acc
     }, {})
@@ -47,9 +43,20 @@ const mostBlogs = (blogs) => {
     return returnedObject
 }
 
+const mostLikes = (blogs) => {
+    return _.chain(blogs)
+        .groupBy('author')
+        .map((obj, key) => ({ 'author': key, 'likes': _.sumBy(obj, 'likes') }))
+        .sortBy('likes')
+        .last()
+        .value()
+}
+
+
 module.exports = {
     dummy,
     totalLikes,
     favoriteBlog,
-    mostBlogs
+    mostBlogs,
+    mostLikes
 }
