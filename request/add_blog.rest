@@ -1,0 +1,9 @@
+POST http://localhost:3001/api/blog
+Content-Type: application/json
+
+{
+    "title": "New Blog Title",
+    "author": "Ladoui Abdellah",
+    "url": "https://ladouiabdellah.com/",
+    "likes": 5
+}

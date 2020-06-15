@@ -11,26 +11,23 @@ blogRouter.get('/', async (req, res) => {
 
 blogRouter.post('/', async (req, res) => {
   const body = req.body
-  const decodedToken = jwt.verify(req.token, process.env.SECRET)
-  if (!req.token || !decodedToken.id) {
+  try {
+    const decodedToken = jwt.verify(req.token, process.env.SECRET)
+    const user = await User.findById(decodedToken.id)
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
+      user: user._id
+    })
+    const result = await blog.save()
+    user.blogs = user.blogs.concat(result)
+    await user.save()
+    res.status(201).json(result.toJSON())
+  } catch (error) {
     return res.status(401).json({error: 'token missing or invalid'})
   }
-  const user = await User.findById(decodedToken.id)
-
-  console.log(req.token)
-
-  const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes,
-    user: user._id
-  })
-
-  const result = await blog.save()
-  user.blogs = user.blogs.concat(result)
-  await user.save()
-  res.status(201).json(result.toJSON())
 })
 
 blogRouter.put('/:id', async (req, res) => {
